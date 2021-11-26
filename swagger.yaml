@@ -1,0 +1,176 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "YPB Interview Test APIs"
+  contact:
+    email: "kittaporn.jp@gmail.com"
+host: "localhost:3000"
+basePath: "/"
+tags:
+- name: "Admin"
+  description: "Admin APIs"
+schemes:
+- "http"
+paths:
+  /admin/url:
+    get:
+      tags:
+      - "Admin"
+      summary: "List all urls in db"
+      description: ""
+      operationId: "listURLs"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - in: query
+          name: shortCode
+          type: string
+          description: filter shortened URL code by shortCode
+        - in: query
+          name: keyword
+          type: string
+          description: filter original URL by shortCode
+      responses:
+        "200":
+          description: "An array of URLs information"
+          schema:
+            $ref: "#/definitions/URLs"
+      security:
+      - Bearer: []
+  
+  /admin/url/{code}:
+    get:
+      tags:
+      - "Admin"
+      summary: "Get a specific URL"
+      description: ""
+      operationId: "getURL"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - in: path
+          name: code
+          type: string
+          required: true
+          description: a shortened URL code
+      responses:
+        "200":
+          description: "An URL information"
+          schema:
+            $ref: "#/definitions/URL"
+      security:
+      - Bearer: []
+    delete:
+      tags:
+      - "Admin"
+      summary: "Delete URL"
+      description: ""
+      operationId: "deleteURL"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - in: path
+          name: code
+          type: string
+          required: true
+          description: a shortened URL code
+      responses:
+        "200":
+          description: "An URL information"
+          schema:
+            type: string
+            example: "ok"
+                  
+      security:
+      - Bearer: []
+  
+  /url:
+    post:
+      tags:
+      - "Url"
+      summary: "Shorten a new URL"
+      operationId: "postURL"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "order placed for purchasing the pet"
+        required: true
+        schema:
+          $ref: "#/definitions/URLBody"
+      responses:
+        "200":
+          description: "Returned shortened URL"
+          schema:
+            type: object
+            properties:
+              shortURL:
+                type: string
+                description: "shortened url"
+                example: "http://localhost:3000/qKxjkcBqw"
+  /{code}:
+    get:
+      tags:
+      - "Index"
+      summary: "Go to given shortened URL"
+      description: ""
+      operationId: "gotoURL"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - in: path
+          name: code
+          type: string
+          required: true
+          description: a shortened URL code
+      responses:
+        "302":
+          description: "Found originall url redirecting"
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    
+      
+definitions:
+  URLBody:
+    type: object
+    properties:
+      longURL:
+        type: string
+        description: "original url"
+        example: "http://www.yahoo.com"
+      exp:
+        type: number
+        description: "expired time in YYYY-MM-DD HH:mm:ss format"
+        example: "2021-11-26 20:00:00"
+  URL:
+    type: object
+    properties:
+      urlCode:
+        type: string
+        description: "shortened url"
+      longURL:
+        type: string
+        description: "original url"
+      hits:
+        type: number
+        description: "number of hits"
+      exp:
+        type: number
+        description: "expired time in unix timestamp format"
+  URLs:
+    type: "array"
+    items:
+      $ref: '#/definitions/URL'

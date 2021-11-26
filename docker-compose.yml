@@ -1,0 +1,24 @@
+version: '3.7'
+services:
+  mongodb_container:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: _admin
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+  server :
+    depends_on:
+      - mongodb_container
+    links:
+      - mongodb_container
+    build: .
+    volumes :
+      - /app/node_modules
+      - ./:/app
+    ports:
+      - "3000:3000"
+volumes:
+  mongodb_data_container:
